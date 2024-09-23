@@ -21,6 +21,8 @@ namespace EAD
 
             // Register UserService or other services
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<ProductService>();
+            builder.Services.AddScoped<OrderService>();
 
             // Add services to the container.
             builder.Services.AddControllers();
