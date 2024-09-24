@@ -4,7 +4,7 @@
  *              including creation, retrieval, update, and deactivation 
  *              using MongoDB as the database. 
  *              It supports asynchronous operations for scalability.
- * Author: Chanukya Serasinghe
+ * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: This service depends on MongoDB.Driver and a UserModel class. 
  ***************************************************************/

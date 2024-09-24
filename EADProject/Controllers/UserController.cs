@@ -4,7 +4,7 @@
  *              user accounts, including creating, updating, deactivating,
  *              and retrieving users. It leverages UserService for
  *              communication with MongoDB.
- * Author: Chanukya Serasinghe
+ * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: Ensure that proper authorization is applied to sensitive 
  *        operations like updating or deactivating accounts.
