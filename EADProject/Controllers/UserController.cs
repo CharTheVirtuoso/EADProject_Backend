@@ -35,7 +35,7 @@ namespace EADProject.Controllers
         // POST: api/user/create
         // Parameters: A UserModel object containing user details.
         // Returns: The created user with a status of 201 Created.
-        [HttpPost("create")]
+        [HttpPost("createUser")]
         public async Task<IActionResult> CreateUser([FromBody] UserModel user)
         {
             var createdUser = await _userService.CreateUserAsync(user);
@@ -46,7 +46,7 @@ namespace EADProject.Controllers
         // GET: api/user/{id}
         // Parameters: The user ID.
         // Returns: The user details if found, or 404 Not Found if not.
-        [HttpGet("{id}")]
+        [HttpGet("getUserById/{id}")]
         public async Task<IActionResult> GetUser(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -61,7 +61,7 @@ namespace EADProject.Controllers
         // PUT: api/user/{id}
         // Parameters: The user ID and the updated user details.
         // Returns: A success message if updated, or 404 Not Found if user not found, or 403 Forbid if unauthorized.
-        [HttpPut("{id}")]
+        [HttpPut("updateUser/{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UserModel updatedUser)
         {
             var existingUser = await _userService.GetUserByIdAsync(id);
@@ -88,7 +88,7 @@ namespace EADProject.Controllers
         // PUT: api/user/{id}/deactivate
         // Parameters: The user ID.
         // Returns: A success message if deactivated, or 404 Not Found if user not found, or 403 Forbid if unauthorized.
-        [HttpPut("{id}/deactivate")]
+        [HttpPut("{id}/deactivateUser")]
         public async Task<IActionResult> DeactivateAccount(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -115,7 +115,7 @@ namespace EADProject.Controllers
         // PUT: api/user/{id}/reactivate
         // Parameters: The user ID.
         // Returns: A success message if reactivated, or 404 Not Found if user not found, or 403 Forbid if unauthorized.
-        [HttpPut("{id}/reactivate")]
+        [HttpPut("{id}/reactivateUser")]
         public async Task<IActionResult> ReactivateAccount(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -142,7 +142,7 @@ namespace EADProject.Controllers
         // Retrieve all users from the system.
         // GET: api/user/all
         // Returns: A list of all users in the database.
-        [HttpGet("all")]
+        [HttpGet("getAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();

@@ -28,11 +28,14 @@ namespace EADProject.Models
         // Stores the user's password (ensure it is hashed in real implementations).
         public string Password { get; set; }
 
+        // Stores the user's  address.
+        public string Address { get; set; }
+
         // Stores the user's role, e.g., Admin, User, CSR.
         public string Role { get; set; }
 
         // Indicates whether the user's account is active or not. Defaults to true.
-        public bool IsActive { get; set; } = true; // By default, the user is active.
+        public bool IsActive { get; set; } = false; // By default, the user is not active.
     }
 }
 
