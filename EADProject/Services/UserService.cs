@@ -29,6 +29,84 @@ namespace EADProject.Services
             _users = database.GetCollection<UserModel>("Users");
         }
 
+        // User Sign-up for customer role
+        public async Task<bool> SignUpAsync(UserModel user)
+        {
+            // Ensure the role is set to 'Customer'
+            user.Role = "Customer";
+            user.UserStatus = "Pending"; // Pending approval from admin
+            user.IsActive = false; // Account not active until admin approval
+
+            // Insert new user into the database
+            await _users.InsertOneAsync(user);
+            return true;
+        }
+
+        // User login
+        public async Task<UserModel?> LoginAsync(string email, string password)
+        {
+            var user = await _users.Find(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
+
+            // Check if the user is active and approved
+            if (user != null && user.IsActive)
+            {
+                return user;
+            }
+
+            return null;
+        }
+
+        //// Admin approves user registration
+        //public async Task<bool> ApproveUserAsync(string userId, string status)
+        //{
+        //    var filter = Builders<UserModel>.Filter.Eq("_id", userId);
+        //    var update = Builders<UserModel>.Update.Set("UserStatus", status);
+
+        //    // If approved, set user as active
+        //    if (status == "Pending")
+        //    {
+        //        update = update.Set("status", "Approved");
+        //        update = update.Set("IsActive", true);
+        //    }
+
+        //    var result = await _users.UpdateOneAsync(filter, update);
+        //    return result.ModifiedCount > 0;
+        //}
+
+       public async Task<bool> ApproveUserAsync(string userId)
+    {
+        // Ensure the userId is converted to ObjectId before querying
+        var objectId = ObjectId.Parse(userId);
+
+        var filter = Builders<UserModel>.Filter.Eq("_id", objectId);
+
+        // Update the status to "Approved" and set the user as active
+        var update = Builders<UserModel>.Update
+            .Set("UserStatus", "Approved")
+            .Set("IsActive", true);
+
+        var result = await _users.UpdateOneAsync(filter, update);
+        return result.ModifiedCount > 0;
+    }
+
+
+    // Admin  rejects user registration
+    public async Task<bool> RejectUserAsync(string userId)
+        {
+
+            // Ensure the userId is converted to ObjectId before querying
+            var objectId = ObjectId.Parse(userId);
+
+            var filter = Builders<UserModel>.Filter.Eq("_id", objectId);
+
+            // Update the status to "rejected" and set the user as active
+            var update = Builders<UserModel>.Update
+                .Set("UserStatus", "Rejected");
+
+            var result = await _users.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
         // Create a new user in the database.
         // Parameters: UserModel - the user object to be added.
         // Returns: The created UserModel object.
@@ -85,5 +163,13 @@ namespace EADProject.Services
             var result = await _users.UpdateOneAsync(user => user.Id == objectId.ToString(), update);
             return result.IsAcknowledged && result.ModifiedCount > 0;
         }
+
+
+        // Get all pending users for admin review
+        public async Task<List<UserModel>> GetPendingUsersAsync()
+        {
+            return await _users.Find(user => user.UserStatus == "Pending").ToListAsync();
+        }
+    
     }
 }

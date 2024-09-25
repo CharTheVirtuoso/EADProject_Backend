@@ -20,7 +20,7 @@ namespace EADProject.Models
         // Represents the unique ID of the user, stored as ObjectId in MongoDB.
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         // Stores the user's email address.
         public string Email { get; set; }
@@ -29,10 +29,13 @@ namespace EADProject.Models
         public string Password { get; set; }
 
         // Stores the user's  address.
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         // Stores the user's role, e.g., Admin, User, CSR.
-        public string Role { get; set; }
+        public string? Role { get; set; } 
+
+        // Indicates the user status 
+        public String UserStatus { get; set; } = "Pending"; // By default, status is pending.
 
         // Indicates whether the user's account is active or not. Defaults to true.
         public bool IsActive { get; set; } = false; // By default, the user is not active.

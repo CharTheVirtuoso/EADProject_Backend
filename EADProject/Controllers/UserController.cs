@@ -31,11 +31,91 @@ namespace EADProject.Controllers
             _userService = userService;
         }
 
+        // Sign-up endpoint for customers
+        [HttpPost("signup")]
+        public async Task<IActionResult> SignUp([FromBody] UserModel user)
+        {
+            if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+            {
+                return BadRequest("Email and password are required.");
+            }
+
+            var result = await _userService.SignUpAsync(user);
+            if (result)
+            {
+                return Ok("Sign-up successful. Awaiting admin approval.");
+            }
+
+            return BadRequest("Sign-up failed.");
+        }
+
+        // Login endpoint
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserModel loginRequest)
+        {
+            var user = await _userService.LoginAsync(loginRequest.Email, loginRequest.Password);
+            if (user != null)
+            {
+                return Ok(user);
+            }
+
+            return Unauthorized("Invalid credentials or account not active.");
+        }
+
+
+        //// Admin: Approve user status
+        //[HttpPut("admin/approve-user/{id}")]
+        //public async Task<IActionResult> ApproveUser(string id, [FromQuery] string status)
+        //{
+        //    if (status != "Approved" && status != "Rejected")
+        //    {
+        //        return BadRequest("Invalid status. Must be 'Approved' or 'Rejected'.");
+        //    }
+
+        //    var result = await _userService.ApproveUserAsync(id, status);
+        //    if (result)
+        //    {
+        //        return Ok("User status updated successfully.");
+        //    }
+
+        //    return NotFound("User not found.");
+        //}
+
+        // Admin: Approve user status
+        [HttpPut("admin/approve-user/{id}")]
+        public async Task<IActionResult> ApproveUser(string id)
+        {
+            var result = await _userService.ApproveUserAsync(id);
+            if (result)
+            {
+                return Ok("User approved successfully.");
+            }
+
+            return NotFound("User not found.");
+        }
+
+
+        // Admin: Reject user status
+        [HttpPut("admin/reject-user/{id}")]
+        public async Task<IActionResult> RejectUser(string id)
+        {
+          
+
+            var result = await _userService.RejectUserAsync(id);
+            if (result)
+            {
+                return Ok("User rejected successfully.");
+            }
+
+            return NotFound("User not found.");
+        }
+
+
         // Create a new user.
         // POST: api/user/create
         // Parameters: A UserModel object containing user details.
         // Returns: The created user with a status of 201 Created.
-        [HttpPost("createUser")]
+        [HttpPost("admin/createUser")]
         public async Task<IActionResult> CreateUser([FromBody] UserModel user)
         {
             var createdUser = await _userService.CreateUserAsync(user);
@@ -138,6 +218,7 @@ namespace EADProject.Controllers
 
             return Forbid("Only CSR can reactivate deactivated accounts.");
         }
+
 
         // Retrieve all users from the system.
         // GET: api/user/all
