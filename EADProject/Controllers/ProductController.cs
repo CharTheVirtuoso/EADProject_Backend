@@ -33,6 +33,13 @@ namespace EADProject.Controllers
             return Ok(product);
         }
 
+        [HttpGet("category/{category}")]
+        public async Task<IActionResult> GetProductsByCategory(string category)
+        {
+            var products = await _productService.GetProductsByCategoryAsync(category);
+            return Ok(products);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductModel updatedProduct)
         {
@@ -43,7 +50,33 @@ namespace EADProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(string id)
         {
+            var isPendingOrder = await _productService.CheckIfProductInPendingOrder(id);
+            if (isPendingOrder)
+            {
+                return BadRequest("Cannot delete a product that is part of a pending order.");
+            }
             await _productService.DeleteProductAsync(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}/activate")]
+        public async Task<IActionResult> ActivateProduct(string id)
+        {
+            await _productService.ActivateProductAsync(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}/deactivate")]
+        public async Task<IActionResult> DeactivateProduct(string id)
+        {
+            await _productService.DeactivateProductAsync(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}/updatestock")]
+        public async Task<IActionResult> UpdateStock(string id, [FromBody] int stockQuantity)
+        {
+            await _productService.UpdateStockAsync(id, stockQuantity);
             return NoContent();
         }
     }
