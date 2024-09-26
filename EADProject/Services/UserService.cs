@@ -56,23 +56,7 @@ namespace EADProject.Services
             return null;
         }
 
-        //// Admin approves user registration
-        //public async Task<bool> ApproveUserAsync(string userId, string status)
-        //{
-        //    var filter = Builders<UserModel>.Filter.Eq("_id", userId);
-        //    var update = Builders<UserModel>.Update.Set("UserStatus", status);
-
-        //    // If approved, set user as active
-        //    if (status == "Pending")
-        //    {
-        //        update = update.Set("status", "Approved");
-        //        update = update.Set("IsActive", true);
-        //    }
-
-        //    var result = await _users.UpdateOneAsync(filter, update);
-        //    return result.ModifiedCount > 0;
-        //}
-
+        // Admin approves user registration
        public async Task<bool> ApproveUserAsync(string userId)
     {
         // Ensure the userId is converted to ObjectId before querying
