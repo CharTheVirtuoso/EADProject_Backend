@@ -48,7 +48,7 @@ namespace EADProject.Services
             var user = await _users.Find(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
 
             // Check if the user is active and approved
-            if (user != null && user.IsActive)
+            if (user != null && user.IsActive && user.Role == "Customer")
             {
                 return user;
             }
