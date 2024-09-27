@@ -48,7 +48,7 @@ namespace EADProject.Services
             var user = await _users.Find(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
 
             // Check if the user is active and approved
-            if (user != null && user.IsActive && user.Role == "Customer")
+            if (user != null && user.IsActive)
             {
                 return user;
             }
@@ -96,6 +96,10 @@ namespace EADProject.Services
         // Returns: The created UserModel object.
         public async Task<UserModel> CreateUserAsync(UserModel user)
         {
+          
+            user.UserStatus = "Approved"; // approval from admin
+            user.IsActive = true; 
+
             await _users.InsertOneAsync(user);
             return user;
         }
