@@ -43,7 +43,7 @@ namespace EADProject.Controllers
             var result = await _userService.SignUpAsync(user);
             if (result)
             {
-                return Ok("Sign-up successful. Awaiting admin approval.");
+                return Ok(user);
             }
 
             return BadRequest("Sign-up failed.");
