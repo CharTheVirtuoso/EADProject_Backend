@@ -1,4 +1,16 @@
-﻿using EADProject.Models;
+﻿/***************************************************************
+ * File Name: ProductController.cs
+ * Description: Defines the API endpoints for managing product-related 
+ *              operations. This controller handles product creation, 
+ *              updating, deleting, retrieving, and stock management.
+ *              The API is accessible to vendors, admins, and CSR.
+ * Author: Chanukya Serasinghe, Nashali Perera
+ * Date Created: September 15, 2024
+ * Notes: This controller is part of the API layer that interacts 
+ *        with the ProductService class and MongoDB collections.
+ ***************************************************************/
+
+using EADProject.Models;
 using EADProject.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -12,20 +24,14 @@ namespace EADProject.Controllers
     {
         private readonly ProductService _productService;
 
+        // Constructor: Injects ProductService dependency.
         public ProductController(ProductService productService)
         {
             _productService = productService;
         }
 
-        //// Create a new product (Vendor only)
-        //[HttpPost("createProduct")]
-        //public async Task<IActionResult> CreateProduct([FromBody] ProductModel product)
-        //{
-        //    var createdProduct = await _productService.CreateProductAsync(product);
-        //    return Ok(createdProduct);
-        //}
-
         // POST: api/product/createProduct
+        // Create a new product. Validates the product category before adding it.
         [HttpPost("createProduct")]
         public async Task<IActionResult> CreateProduct([FromBody] ProductModel product)
         {
@@ -40,7 +46,7 @@ namespace EADProject.Controllers
             }
         }
 
-        // Update an existing product (Vendor only)
+        // Update an existing product by its ID (Vendor only).
         [HttpPut("updateProduct/{id}")]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductModel product)
         {
@@ -52,7 +58,7 @@ namespace EADProject.Controllers
             return Ok("Product updated successfully");
         }
 
-        // Delete a product (Vendor only)
+        // Delete a product by its ID (Vendor only).
         [HttpDelete("deleteProduct/{id}")]
         public async Task<IActionResult> DeleteProduct(string id)
         {
@@ -64,7 +70,7 @@ namespace EADProject.Controllers
             return Ok("Product deleted successfully");
         }
 
-        // Update product stock (Vendor only)
+        // Update product stock by ID and quantity (Vendor only).
         [HttpPatch("stock/{id}")]
         public async Task<IActionResult> UpdateProductStock(string id, [FromQuery] int quantity)
         {
@@ -76,7 +82,7 @@ namespace EADProject.Controllers
             return Ok("Product stock updated successfully");
         }
 
-        // Get all products (Admin/CSR)
+        // Get a list of all products (Admin/CSR).
         [HttpGet("getAllProducts")]
         public async Task<ActionResult<List<ProductModel>>> GetAllProducts()
         {
@@ -84,8 +90,8 @@ namespace EADProject.Controllers
             return Ok(products);
         }
 
-
-        // GET: api/product/byVendorId/{vendorId}
+        // GET: api/product/getProductsByVendor/{vendorId}
+        // Fetch products by VendorId. Returns a list of products from a specific vendor.
         [HttpGet("getProductsByVendor/{vendorId}")]
         public async Task<IActionResult> GetProductsByVendorId(string vendorId)
         {
@@ -104,7 +110,7 @@ namespace EADProject.Controllers
             }
         }
 
-        // Get product by ID
+        // Get a product by its unique ID. Returns the product if found.
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductModel>> GetProductById(string id)
         {
@@ -116,7 +122,8 @@ namespace EADProject.Controllers
             return Ok(product);
         }
 
-        // GET: api/product/byCategoryName/{categoryName}
+        // GET: api/product/getProductByCategory/{categoryName}
+        // Fetch products by category name. Returns a list of products under the specified category.
         [HttpGet("getProductByCategory/{categoryName}")]
         public async Task<IActionResult> GetProductsByCategoryName(string categoryName)
         {
