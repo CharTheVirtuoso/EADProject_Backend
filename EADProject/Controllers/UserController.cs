@@ -205,8 +205,7 @@ namespace EADProject.Controllers
             }
 
             // Ensure that the currently logged-in user is a CSR.
-            if (User.Identity.IsAuthenticated && User.IsInRole("CSR"))
-            {
+            
                 var result = await _userService.ReactivateUserAccountAsync(id);
                 if (result)
                 {
@@ -214,9 +213,8 @@ namespace EADProject.Controllers
                 }
 
                 return BadRequest("Failed to reactivate user account.");
-            }
+            
 
-            return Forbid("Only CSR can reactivate deactivated accounts.");
         }
 
 
