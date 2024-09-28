@@ -68,6 +68,7 @@ public class Program
         builder.Services.AddScoped<UserService>();
         builder.Services.AddScoped<ProductService>();
         builder.Services.AddScoped<OrderService>();
+        builder.Services.AddScoped<CategoryService>();
 
         // Add services to the container.
         builder.Services.AddControllers();

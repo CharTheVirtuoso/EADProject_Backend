@@ -9,15 +9,35 @@ namespace EADProject.Services
     public class ProductService
     {
         private readonly IMongoCollection<ProductModel> _products;
+        private readonly IMongoCollection<CategoryModel> _categories;
+        private readonly IMongoCollection<UserModel> _users;
 
         public ProductService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _products = database.GetCollection<ProductModel>("Products");
+            _categories = database.GetCollection<CategoryModel>("Categories");
+            _users =database.GetCollection<UserModel>("Users");
         }
-        // Create a new product
+        //// Create a new product
+        //public async Task<ProductModel> CreateProductAsync(ProductModel product)
+        //{
+        //    await _products.InsertOneAsync(product);
+        //    return product;
+        //}
+
+   
         public async Task<ProductModel> CreateProductAsync(ProductModel product)
         {
+            // Check if the category name exists and is active
+            var category = await _categories.Find(c => c.CategoryName == product.CategoryName && c.IsActive).FirstOrDefaultAsync();
+
+            if (category == null)
+            {
+                throw new Exception("Category not found or is inactive.");
+            }
+
+            // Proceed to insert the product with the category name
             await _products.InsertOneAsync(product);
             return product;
         }
@@ -36,18 +56,12 @@ namespace EADProject.Services
             return result.DeletedCount > 0;
         }
 
-        // Activate/Deactivate a product
-        public async Task<bool> UpdateProductActivationAsync(string id, bool isActive)
+        // Fetch products by VendorId
+        public async Task<List<ProductModel>> GetProductsByVendorIdAsync(string vendorId)
         {
-            var update = Builders<ProductModel>.Update.Set(p => p.IsActive, isActive);
-            var result = await _products.UpdateOneAsync(p => p.Id == id, update);
-            return result.ModifiedCount > 0;
-        }
-
-        // Get all products for a vendor
-        public async Task<List<ProductModel>> GetProductsByVendorAsync(string vendorId)
-        {
-            return await _products.Find(p => p.VendorId == vendorId).ToListAsync();
+            // Find products where VendorId matches
+            var products = await _products.Find(p => p.VendorId == vendorId).ToListAsync();
+            return products;
         }
 
         // Get product by ID
@@ -56,10 +70,12 @@ namespace EADProject.Services
             return await _products.Find(p => p.Id == id).FirstOrDefaultAsync();
         }
 
-        // Get product by category
-        public async Task<List<ProductModel>> GetProductsByCategoryAsync(string category)
+        // Fetch products by CategoryName
+        public async Task<List<ProductModel>> GetProductsByCategoryNameAsync(string categoryName)
         {
-            return await _products.Find(product => product.Category == category && product.IsActive).ToListAsync();
+            // Find products where the CategoryName matches
+            var products = await _products.Find(p => p.CategoryName == categoryName).ToListAsync();
+            return products;
         }
 
         // Update stock for a product and check for low stock
@@ -90,10 +106,12 @@ namespace EADProject.Services
             return result.ModifiedCount > 0;
         }
 
-        // Get all products (for Admin and CSR)
+        // Get all products
         public async Task<List<ProductModel>> GetAllProductsAsync()
         {
             return await _products.Find(_ => true).ToListAsync();
         }
+
+       
     }
 }

@@ -17,12 +17,27 @@ namespace EADProject.Controllers
             _productService = productService;
         }
 
-        // Create a new product (Vendor only)
+        //// Create a new product (Vendor only)
+        //[HttpPost("createProduct")]
+        //public async Task<IActionResult> CreateProduct([FromBody] ProductModel product)
+        //{
+        //    var createdProduct = await _productService.CreateProductAsync(product);
+        //    return Ok(createdProduct);
+        //}
+
+        // POST: api/product/createProduct
         [HttpPost("createProduct")]
         public async Task<IActionResult> CreateProduct([FromBody] ProductModel product)
         {
-            var createdProduct = await _productService.CreateProductAsync(product);
-            return Ok(createdProduct);
+            try
+            {
+                var createdProduct = await _productService.CreateProductAsync(product);
+                return Ok(createdProduct);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // Update an existing product (Vendor only)
@@ -49,18 +64,6 @@ namespace EADProject.Controllers
             return Ok("Product deleted successfully");
         }
 
-        // Activate/Deactivate a product (Vendor/Admin)
-        [HttpPatch("activateProduct/{id}")]
-        public async Task<IActionResult> ActivateProduct(string id, [FromQuery] bool isActive)
-        {
-            var updated = await _productService.UpdateProductActivationAsync(id, isActive);
-            if (!updated)
-            {
-                return NotFound();
-            }
-            return Ok($"Product {(isActive ? "activated" : "deactivated")} successfully");
-        }
-
         // Update product stock (Vendor only)
         [HttpPatch("stock/{id}")]
         public async Task<IActionResult> UpdateProductStock(string id, [FromQuery] int quantity)
@@ -81,29 +84,24 @@ namespace EADProject.Controllers
             return Ok(products);
         }
 
-        // Get products by Vendor ID (Vendor only)
+
+        // GET: api/product/byVendorId/{vendorId}
         [HttpGet("getProductsByVendor/{vendorId}")]
-        public async Task<ActionResult<List<ProductModel>>> GetProductsByVendor(string vendorId)
+        public async Task<IActionResult> GetProductsByVendorId(string vendorId)
         {
-            var products = await _productService.GetProductsByVendorAsync(vendorId);
-            if (products == null)
+            try
             {
-                return NotFound();
+                var products = await _productService.GetProductsByVendorIdAsync(vendorId);
+                if (products == null || products.Count == 0)
+                {
+                    return NotFound(new { message = "No products found for the given vendor." });
+                }
+                return Ok(products);
             }
-            return Ok(products);
-        }
-
-        // Get products by category
-        [HttpGet("getProductsByCategory/{category}")]
-        public async Task<IActionResult> GetProductsByCategory(string category)
-        {
-            var products = await _productService.GetProductsByCategoryAsync(category);
-            if (products == null || products.Count == 0)
+            catch (Exception ex)
             {
-                return NotFound(new { Message = "No products found in this category." });
+                return BadRequest(new { message = ex.Message });
             }
-
-            return Ok(products);
         }
 
         // Get product by ID
@@ -116,6 +114,25 @@ namespace EADProject.Controllers
                 return NotFound();
             }
             return Ok(product);
+        }
+
+        // GET: api/product/byCategoryName/{categoryName}
+        [HttpGet("getProductByCategory/{categoryName}")]
+        public async Task<IActionResult> GetProductsByCategoryName(string categoryName)
+        {
+            try
+            {
+                var products = await _productService.GetProductsByCategoryNameAsync(categoryName);
+                if (products == null || products.Count == 0)
+                {
+                    return NotFound(new { message = "No products found for the given category." });
+                }
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
