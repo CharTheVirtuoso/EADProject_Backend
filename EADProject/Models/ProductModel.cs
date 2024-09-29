@@ -25,6 +25,9 @@ namespace EADProject.Models
         // Name of the product.
         public string Name { get; set; }
 
+        // Image of the product.
+        public string? Imgurl { get; set; }
+
         // Detailed description of the product.
         public string Description { get; set; }
 
