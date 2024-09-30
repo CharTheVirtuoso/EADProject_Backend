@@ -91,5 +91,17 @@ namespace EADProject.Services
             }
             return false;
         }
+
+        // In OrderService.cs
+        public async Task<bool> RemoveOrderItemAsync(string orderId, string productId)
+        {
+            var update = Builders<OrderModel>.Update.PullFilter(
+                o => o.Items,
+                item => item.ProductId == productId);
+
+            var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+            return result.ModifiedCount > 0;
+        }
+
     }
 }

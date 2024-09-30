@@ -88,5 +88,18 @@ namespace EADProject.Controllers
             }
             return BadRequest("Failed to update order status.");
         }
+
+        // In OrderController.cs
+        [HttpDelete("removeItem/{orderId}/{productId}")]
+        public async Task<IActionResult> RemoveOrderItem(string orderId, string productId)
+        {
+            var success = await _orderService.RemoveOrderItemAsync(orderId, productId);
+            if (success)
+            {
+                return Ok("Item removed successfully.");
+            }
+            return NotFound("Order not found or item does not exist.");
+        }
+
     }
 }
