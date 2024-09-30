@@ -1,6 +1,9 @@
 ﻿using EADProject.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EADProject.Services
 {
@@ -14,26 +17,79 @@ namespace EADProject.Services
             _orders = database.GetCollection<OrderModel>("Orders");
         }
 
+        // Create a new order.
         public async Task<OrderModel> CreateOrderAsync(OrderModel order)
         {
             await _orders.InsertOneAsync(order);
             return order;
         }
 
-        public async Task<OrderModel> GetOrderByIdAsync(string id)
+        // Get all orders for a specific user.
+        public async Task<List<OrderModel>> GetOrdersByUserIdAsync(string userId)
         {
-            return await _orders.Find(order => order.Id == id).FirstOrDefaultAsync();
+            return await _orders.Find(order => order.UserId == userId).ToListAsync();
         }
 
-        public async Task UpdateOrderStatusAsync(string id, string newStatus)
-        {
-            var update = Builders<OrderModel>.Update.Set(o => o.OrderStatus, newStatus);
-            await _orders.UpdateOneAsync(order => order.Id == id, update);
-        }
-
+        // Get all orders.
         public async Task<List<OrderModel>> GetAllOrdersAsync()
         {
             return await _orders.Find(_ => true).ToListAsync();
+        }
+
+        // Get orders by vendor ID.
+        public async Task<List<OrderModel>> GetOrdersByVendorIdAsync(string vendorId)
+        {
+            return await _orders.Find(order => order.VendorDeliveryStatus.ContainsKey(vendorId)).ToListAsync();
+        }
+
+        // Update the order status.
+        public async Task<bool> UpdateOrderStatusAsync(string orderId, string status)
+        {
+            var update = Builders<OrderModel>.Update.Set(o => o.Status, status);
+            var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+            return result.ModifiedCount > 0;
+        }
+
+        // Cancel the order by updating its status and notifying the customer.
+        public async Task<bool> CancelOrderAsync(string orderId)
+        {
+            var update = Builders<OrderModel>.Update.Set(o => o.Status, "Cancelled");
+            var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+            return result.ModifiedCount > 0;
+        }
+
+        // Mark the order as delivered by the vendor.
+        public async Task<bool> MarkOrderDeliveredAsync(string orderId, string vendorId)
+        {
+            var update = Builders<OrderModel>.Update.Set($"VendorDeliveryStatus.{vendorId}", true);
+            var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+            return result.ModifiedCount > 0;
+        }
+
+        // Check if all vendors have delivered and mark the order as fully delivered.
+        public async Task<bool> FinalizeDeliveryAsync(string orderId)
+        {
+            var order = await _orders.Find(o => o.Id == orderId).FirstOrDefaultAsync();
+            if (order != null)
+            {
+                var allDelivered = true;
+                foreach (var status in order.VendorDeliveryStatus.Values)
+                {
+                    if (!status)
+                    {
+                        allDelivered = false;
+                        break;
+                    }
+                }
+
+                if (allDelivered)
+                {
+                    var update = Builders<OrderModel>.Update.Set(o => o.Status, "Delivered");
+                    var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+                    return result.ModifiedCount > 0;
+                }
+            }
+            return false;
         }
     }
 }
