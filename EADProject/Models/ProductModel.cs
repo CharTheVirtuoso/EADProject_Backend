@@ -19,8 +19,9 @@ namespace EADProject.Models
     // Represents a product entity in the system.
     public class ProductModel
     {
-        // Unique identifier for the product.
-        public string Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
 
         // Name of the product.
         public string Name { get; set; }
