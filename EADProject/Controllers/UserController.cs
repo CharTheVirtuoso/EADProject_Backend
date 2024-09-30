@@ -147,12 +147,6 @@ namespace EADProject.Controllers
                 return NotFound();
             }
 
-            // Ensure only customers can update their own accounts.
-            if (existingUser.Role != "Customer")
-            {
-                return Forbid("Only customers can update their own account details.");
-            }
-
             // Call the service to update the user.
             var result = await _userService.UpdateUserAsync(id, updatedUser);
             if (result)

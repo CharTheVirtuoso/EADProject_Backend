@@ -9,7 +9,7 @@ namespace EADProject.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         // Product associated with this order item.
         public string ProductId { get; set; }
@@ -25,7 +25,7 @@ namespace EADProject.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         // User who placed the order.
         public string UserId { get; set; }
@@ -42,8 +42,6 @@ namespace EADProject.Models
         // Total cost of the order.
         public decimal TotalAmount { get; set; }
 
-        // Shipping charges.
-        public decimal ShippingCharges { get; set; }
 
         // Date and time when the order was placed.
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;

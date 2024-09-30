@@ -75,5 +75,14 @@ namespace EADProject.Controllers
             await _categoryService.UpdateCategoryStatusAsync(id, false);
             return Ok();
         }
+
+        // PUT: api/category/getAllCategoriesWithProductCount
+        // Endpoint to retrieve categories with product count
+        [HttpGet("getAllCategoriesWithProductCount")]
+        public async Task<ActionResult<List<CategoryModel>>> GetCategoriesWithProductCount()
+        {
+            var categoriesWithProductCount = await _categoryService.GetCategoriesWithProductCountAsync();
+            return Ok(categoriesWithProductCount);
+        }
     }
 }

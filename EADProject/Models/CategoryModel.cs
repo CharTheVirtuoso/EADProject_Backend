@@ -25,6 +25,9 @@ namespace EADProject.Models
         // Name of the category.
         public string CategoryName { get; set; }
 
+        //Product count
+        public int? CategoryCount { get; set; }
+
         // Status flag indicating if the category is active.
         public bool IsActive { get; set; } = true;
     }

@@ -22,6 +22,9 @@ namespace EADProject.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
 
+        //Stores the user's name.
+        public string? Name { get; set; }
+
         // Stores the user's email address.
         public string Email { get; set; }
 
