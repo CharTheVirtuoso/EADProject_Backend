@@ -30,6 +30,28 @@ namespace EADProject.Models
         // Collection of product items with quantities.
         public List<CartItemModel> Products { get; set; } = new List<CartItemModel>();
     }
+
+    // Model for decrementing a product in the cart
+    public class DecrementRequest
+    {
+        public string UserId { get; set; }
+        public string ProductId { get; set; }
+    }
+
+    // Model for adding/updating a product in the cart
+    public class CartItemRequest
+    {
+        public string UserId { get; set; }
+        public string ProductId { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    // Model for removing a product from the cart
+    public class RemoveFromCartRequest
+    {
+        public string UserId { get; set; }
+        public string ProductId { get; set; }
+    }
 }
 
 

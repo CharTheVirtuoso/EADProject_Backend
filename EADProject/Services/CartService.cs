@@ -20,43 +20,48 @@ namespace EADProject.Services
         }
 
         // Create or update a cart for the user
-        public async Task<UserCartModel> AddProductToCart(string userId, string productId)
+        public async Task<UserCartModel> AddProductToCart(string userId, string productId, int quantity)
             {
-                // Find the cart for the user
-                var userCart = await _carts.Find(cart => cart.UserId == userId).FirstOrDefaultAsync();
+            var userCart = await _carts.Find(cart => cart.UserId == userId).FirstOrDefaultAsync();
 
-                if (userCart == null)
+            if (userCart == null)
+            {
+                // Create a new cart if none exists
+                userCart = new UserCartModel
                 {
-                    // Create a new cart if none exists
-                    userCart = new UserCartModel
-                    {
-                        UserId = userId
-                    };
-                }
-
-                // Check if the product is already in the cart
-                var existingProduct = userCart.Products.Find(p => p.ProductId == productId);
-                if (existingProduct != null)
-                {
-                    // Increment the quantity
-                    existingProduct.Quantity++;
-                }
-                else
-                {
-                    // Add new product with quantity 1
-                    userCart.Products.Add(new CartItemModel
-                    {
-                        ProductId = productId,
-                        Quantity = 1
-                    });
-                }
-
-                // Upsert (insert if not exists, update otherwise) the cart
-                var filter = Builders<UserCartModel>.Filter.Eq(cart => cart.UserId, userId);
-                await _carts.ReplaceOneAsync(filter, userCart, new ReplaceOptions { IsUpsert = true });
-
-                return userCart;
+                    UserId = userId
+                };
             }
+
+            // Check if the product is already in the cart
+            var existingProduct = userCart.Products.Find(p => p.ProductId == productId);
+            if (existingProduct != null)
+            {
+                // Update the quantity
+                existingProduct.Quantity += quantity;
+
+                // If quantity goes to zero or less, remove the product
+                if (existingProduct.Quantity <= 0)
+                {
+                    userCart.Products.Remove(existingProduct);
+                }
+            }
+            else if (quantity > 0) // Only add if quantity is positive
+            {
+                // Add new product with the specified quantity
+                userCart.Products.Add(new CartItemModel
+                {
+                    ProductId = productId,
+                    Quantity = quantity
+                });
+            }
+
+            // Upsert (insert if not exists, update otherwise) the cart
+            var filter = Builders<UserCartModel>.Filter.Eq(cart => cart.UserId, userId);
+            await _carts.ReplaceOneAsync(filter, userCart, new ReplaceOptions { IsUpsert = true });
+
+            return userCart;
+        }
 
             // Get the cart for a specific user
             public async Task<UserCartModel> GetUserCart(string userId)
@@ -64,8 +69,40 @@ namespace EADProject.Services
                 return await _carts.Find(cart => cart.UserId == userId).FirstOrDefaultAsync();
             }
 
-            // Remove an item from the cart
-            public async Task RemoveProductFromCart(string userId, string productId)
+
+        // Decrement a product quantity in the cart
+        public async Task<UserCartModel> DecrementProductQuantity(string userId, string productId)
+        {
+            // Find the user's cart
+            var userCart = await _carts.Find(cart => cart.UserId == userId).FirstOrDefaultAsync();
+
+            if (userCart != null)
+            {
+                // Find the product in the cart
+                var existingProduct = userCart.Products.Find(p => p.ProductId == productId);
+
+                if (existingProduct != null)
+                {
+                    // Decrement the quantity
+                    existingProduct.Quantity--;
+
+                    // If quantity goes to zero or less, remove the product from the cart
+                    if (existingProduct.Quantity <= 0)
+                    {
+                        userCart.Products.Remove(existingProduct);
+                    }
+
+                    // Update the cart in the database
+                    var filter = Builders<UserCartModel>.Filter.Eq(cart => cart.UserId, userId);
+                    await _carts.ReplaceOneAsync(filter, userCart);
+                }
+            }
+
+            return userCart; // Return the updated cart
+        }
+
+        // Remove an item from the cart
+        public async Task RemoveProductFromCart(string userId, string productId)
             {
                 var userCart = await _carts.Find(cart => cart.UserId == userId).FirstOrDefaultAsync();
 
