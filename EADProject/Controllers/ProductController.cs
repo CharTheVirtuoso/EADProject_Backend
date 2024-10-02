@@ -90,6 +90,18 @@ namespace EADProject.Controllers
             return Ok(products);
         }
 
+        // GET api/product/name/{name}
+        [HttpGet("getProductByName/{name}")]
+        public async Task<ActionResult<List<ProductModel>>> GetProductsByName(string name)
+        {
+            var products = await _productService.GetProductsByNameAsync(name);
+            if (products == null || products.Count == 0)
+            {
+                return NotFound($"No products found with name '{name}'.");
+            }
+            return Ok(products);
+        }
+
         // GET: api/product/getProductsByVendor/{vendorId}
         // Fetch products by VendorId. Returns a list of products from a specific vendor.
         [HttpGet("getProductsByVendor/{vendorId}")]

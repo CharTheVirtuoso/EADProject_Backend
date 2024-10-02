@@ -97,6 +97,12 @@ namespace EADProject.Services
             return products;
         }
 
+        // Method to retrieve products by name (case-insensitive)
+        public async Task<List<ProductModel>> GetProductsByNameAsync(string name)
+        {
+            var filter = Builders<ProductModel>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(name, "i")); // 'i' for case-insensitive
+            return await _products.Find(filter).ToListAsync();
+        }
 
         // Get a product by its unique ID. Returns the product if found.
         public async Task<ProductModel> GetProductByIdAsync(string id)
