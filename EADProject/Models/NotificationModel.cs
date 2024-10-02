@@ -4,6 +4,12 @@ using System;
 
 namespace EADProject.Models
 {
+    public enum NotificationType
+    {
+        Admin,
+        Vendor
+    }
+
     public class NotificationModel
     {
         [BsonId]
@@ -18,5 +24,8 @@ namespace EADProject.Models
 
         [BsonElement("CreatedAt")]
         public DateTime CreatedAt { get; set; }
+
+        [BsonElement("NotificationType")]
+        public NotificationType Type { get; set; }  // Admin or Vendor
     }
 }

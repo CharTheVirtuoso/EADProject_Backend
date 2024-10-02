@@ -33,7 +33,8 @@ public class Program
         builder.Services.AddScoped<OrderService>();
         builder.Services.AddScoped<CategoryService>();
         builder.Services.AddScoped<CartService>();
-        builder.Services.AddScoped<NotificationService>();
+        builder.Services.AddScoped<VendorNotificationService>();
+        builder.Services.AddScoped<AdminNotificationService>();
 
         // Add controllers to handle HTTP requests and responses.
         builder.Services.AddControllers();

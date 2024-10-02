@@ -26,14 +26,16 @@ namespace EADProject.Services
         private readonly IMongoCollection<ProductModel> _products;
         private readonly IMongoCollection<CategoryModel> _categories;
         private readonly IMongoCollection<UserModel> _users;
+        private readonly VendorNotificationService _notificationService;
 
         // Constructor: Initializes the MongoDB collections for products, categories, and users.
-        public ProductService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings)
+        public ProductService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, VendorNotificationService notificationService)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _products = database.GetCollection<ProductModel>("Products");
             _categories = database.GetCollection<CategoryModel>("Categories");
             _users = database.GetCollection<UserModel>("Users");
+            _notificationService = notificationService;
         }
 
         // Create a new product. Validates that the category exists and is active.
@@ -66,13 +68,35 @@ namespace EADProject.Services
             return result.DeletedCount > 0;
         }
 
+        //// Fetch a list of products by VendorId. Retrieves all products associated with a specific vendor.
+        //public async Task<List<ProductModel>> GetProductsByVendorIdAsync(string vendorId)
+        //{
+        //    // Find products where VendorId matches
+        //    var products = await _products.Find(p => p.VendorId == vendorId).ToListAsync();
+        //    return products;
+
+        //}
+
         // Fetch a list of products by VendorId. Retrieves all products associated with a specific vendor.
         public async Task<List<ProductModel>> GetProductsByVendorIdAsync(string vendorId)
         {
             // Find products where VendorId matches
             var products = await _products.Find(p => p.VendorId == vendorId).ToListAsync();
+
+            // Check for low stock products and create notifications
+            foreach (var product in products)
+            {
+                if (product.StockQuantity < 5 && product.StockQuantity > 0) // Check if stock is low but not out of stock
+                {
+                    // Create a notification for the vendor
+                    string message = $"Warning: The stock for product '{product.Name}' is low (Only {product.StockQuantity} left). Please restock.";
+                    await _notificationService.CreateVendorNotificationAsync(message);
+                }
+            }
+
             return products;
         }
+
 
         // Get a product by its unique ID. Returns the product if found.
         public async Task<ProductModel> GetProductByIdAsync(string id)
@@ -107,11 +131,7 @@ namespace EADProject.Services
 
             var result = await _products.UpdateOneAsync(p => p.Id == id, update);
 
-            // If low stock, trigger an alert/notification to the vendor here.
-            if (isLowStock)
-            {
-                // Trigger alert (implementation depends on your notification system)
-            }
+           
 
             return result.ModifiedCount > 0;
         }

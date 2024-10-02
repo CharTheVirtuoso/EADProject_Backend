@@ -23,10 +23,10 @@ namespace EADProject.Services
     public class UserService
     {
         private readonly IMongoCollection<UserModel> _users;
-        private readonly NotificationService _notificationService;
+        private readonly AdminNotificationService _notificationService;
 
         // Constructor: Initializes the MongoDB collection for users using client and settings.
-        public UserService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, NotificationService notificationService)
+        public UserService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, AdminNotificationService notificationService)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _users = database.GetCollection<UserModel>("Users");
@@ -46,7 +46,7 @@ namespace EADProject.Services
 
             // Create a notification for the CSR admin.
             var message = $"New user {user.Email} signed up and requires approval.";
-            await _notificationService.CreateNotificationAsync(message);
+            await _notificationService.CreateAdminNotificationAsync(message);
 
             return true;
         }
