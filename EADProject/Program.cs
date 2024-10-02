@@ -32,7 +32,6 @@ public class Program
         builder.Services.AddScoped<ProductService>();
         builder.Services.AddScoped<OrderService>();
         builder.Services.AddScoped<CategoryService>();
-        builder.Services.AddScoped<CartService>();
         builder.Services.AddScoped<VendorNotificationService>();
         builder.Services.AddScoped<AdminNotificationService>();
 
