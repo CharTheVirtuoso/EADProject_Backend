@@ -31,13 +31,13 @@ namespace EADProject.Services
             return order;
         }
 
-        // Update the order status (CSR/Admin)
-        public async Task<bool> UpdateOrderStatus(string orderId, OrderStatus newStatus)
-        {
-            var update = Builders<OrderModel>.Update.Set(o => o.Status, newStatus);
-            var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
-            return result.ModifiedCount > 0;
-        }
+        //// Update the order status (CSR/Admin)
+        //public async Task<bool> UpdateOrderStatus(string orderId, OrderStatus newStatus)
+        //{
+        //    var update = Builders<OrderModel>.Update.Set(o => o.Status, newStatus);
+        //    var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+        //    return result.ModifiedCount > 0;
+        //}
 
         // Update the delivery status for a specific vendor
         public async Task<bool> UpdateVendorDeliveryStatus(string orderId, string vendorId, VendorOrderStatus newStatus)
@@ -47,15 +47,15 @@ namespace EADProject.Services
             return result.ModifiedCount > 0;
         }
 
-        // Cancel an order (CSR/Admin)
-        public async Task<bool> CancelOrder(string orderId, string cancellationNote)
-        {
-            var update = Builders<OrderModel>.Update
-                .Set(o => o.Status, OrderStatus.Canceled)
-                .Set(o => o.CancellationNote, cancellationNote);
-            var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
-            return result.ModifiedCount > 0;
-        }
+        //// Cancel an order (CSR/Admin)
+        //public async Task<bool> CancelOrder(string orderId, string cancellationNote)
+        //{
+        //    var update = Builders<OrderModel>.Update
+        //        .Set(o => o.Status, OrderStatus.Canceled)
+        //        .Set(o => o.CancellationNote, cancellationNote);
+        //    var result = await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+        //    return result.ModifiedCount > 0;
+        //}
 
         // Get all orders (CSR/Admin can list all orders)
         public async Task<List<OrderModel>> GetAllOrders()
