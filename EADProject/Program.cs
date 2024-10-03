@@ -8,7 +8,7 @@
  * Notes: The application uses MongoDB for data storage and configures
  *        necessary services like CORS and Swagger for development.
  ***************************************************************/
-
+using System.Text.Json.Serialization; 
 using EADProject.Models;
 using EADProject.Services;
 using MongoDB.Driver;
@@ -36,7 +36,15 @@ public class Program
         builder.Services.AddScoped<AdminNotificationService>();
 
         // Add controllers to handle HTTP requests and responses.
-        builder.Services.AddControllers();
+        //builder.Services.AddControllers();
+
+        // Add controllers with JSON options
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            // Add enum converter to serialize enums as strings
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+
         builder.Services.AddEndpointsApiExplorer(); // Add API explorer for endpoint discovery.
         builder.Services.AddSwaggerGen(); // Add Swagger for API documentation (if in development).
 

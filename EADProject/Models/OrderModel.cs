@@ -36,7 +36,7 @@ public class OrderModel
     public List<OrderItemModel> Items { get; set; } = new List<OrderItemModel>();
 
     //public OrderStatus Status { get; set; } = OrderStatus.Processing;
-    public String Status { get; set; } = "Processing"; // By default, status is pending.
+    public OrderStatus Status { get; set; } = OrderStatus.Processing;  // By default, status is pending.
 
     public string ShippingAddress { get; set; }
 
