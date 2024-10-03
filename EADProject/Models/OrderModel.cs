@@ -10,15 +10,15 @@ public class OrderItemModel
     public decimal Price { get; set; }
 }
 
-//public enum OrderStatus
-//{
+public enum OrderStatus
+{
    
-//    Processing,
-//    ReadyForDelivery,
-//    PartiallyDelivered,
-//    Delivered,
-//    Canceled
-//}
+    Processing,
+    ReadyForDelivery,
+    PartiallyDelivered,
+    Delivered,
+    Canceled
+}
 
 public enum VendorOrderStatus
 {
@@ -35,7 +35,8 @@ public class OrderModel
 
     public List<OrderItemModel> Items { get; set; } = new List<OrderItemModel>();
 
-    public string Status { get; set; } = "Processing";
+    //public OrderStatus Status { get; set; } = OrderStatus.Processing;
+    public String Status { get; set; } = "Processing"; // By default, status is pending.
 
     public string ShippingAddress { get; set; }
 

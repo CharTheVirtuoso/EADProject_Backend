@@ -34,14 +34,14 @@ namespace EADProject.Controllers
             return Ok(order);
         }
 
-        // PUT: api/Order/{id}/status
-        [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateOrderStatus(string id, [FromBody] OrderStatus status)
-        {
-            var success = await _orderService.UpdateOrderStatus(id, status);
-            if (!success) return NotFound();
-            return NoContent();
-        }
+        //// PUT: api/Order/{id}/status
+        //[HttpPut("{id}/status")]
+        //public async Task<IActionResult> UpdateOrderStatus(string id, [FromBody] OrderStatus status)
+        //{
+        //    var success = await _orderService.UpdateOrderStatus(id, status);
+        //    if (!success) return NotFound();
+        //    return NoContent();
+        //}
 
         // PUT: api/Order/{id}/vendor/{vendorId}/status
         [HttpPut("{id}/vendor/{vendorId}/status")]
@@ -52,14 +52,14 @@ namespace EADProject.Controllers
             return NoContent();
         }
 
-        // PUT: api/Order/{id}/cancel
-        [HttpPut("{id}/cancel")]
-        public async Task<IActionResult> CancelOrder(string id, [FromBody] string cancellationNote)
-        {
-            var success = await _orderService.CancelOrder(id, cancellationNote);
-            if (!success) return NotFound();
-            return NoContent();
-        }
+        //// PUT: api/Order/{id}/cancel
+        //[HttpPut("{id}/cancel")]
+        //public async Task<IActionResult> CancelOrder(string id, [FromBody] string cancellationNote)
+        //{
+        //    var success = await _orderService.CancelOrder(id, cancellationNote);
+        //    if (!success) return NotFound();
+        //    return NoContent();
+        //}
 
         // GET: api/Order
         [HttpGet("getAllOrders")]
