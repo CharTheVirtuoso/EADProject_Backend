@@ -92,14 +92,16 @@ namespace EADProject.Controllers
 
         // GET api/product/name/{name}
         [HttpGet("getProductByName/{name}")]
-        public async Task<ActionResult<List<ProductModel>>> GetProductsByName(string name)
+        public async Task<ActionResult<ProductModel>> GetProductByName(string name)
         {
-            var products = await _productService.GetProductsByNameAsync(name);
-            if (products == null || products.Count == 0)
+            var product = await _productService.GetProductsByNameAsync(name);
+
+            if (product == null)
             {
-                return NotFound($"No products found with name '{name}'.");
+                return NotFound($"No product found with name '{name}'.");
             }
-            return Ok(products);
+
+            return Ok(product);
         }
 
         // GET: api/product/getProductsByVendor/{vendorId}
