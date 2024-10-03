@@ -63,6 +63,15 @@ namespace EADProject.Controllers
             return Ok(orders);
         }
 
+        // GET: api/order/statusCategoriesWithCount
+        [HttpGet("statusCategoriesWithCount")]
+        public async Task<ActionResult<Dictionary<OrderStatus, int>>> GetOrderStatusCategoriesWithCount()
+        {
+            var statusCountDict = await _orderService.GetOrderStatusCategoriesWithCountAsync();
+            return Ok(statusCountDict);
+        }
+
+
         // GET: api/order/vendor/{vendorId}
         [HttpGet("getOrdersByVendorId/{vendorId}")]
         public async Task<ActionResult<List<OrderModel>>> GetOrdersByVendorId(string vendorId)

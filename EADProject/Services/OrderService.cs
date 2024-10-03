@@ -49,6 +49,20 @@ namespace EADProject.Services
             return await _orders.Find(order => order.Status == status).ToListAsync();
         }
 
+        // Get all distinct order statuses with their count
+        public async Task<Dictionary<OrderStatus, int>> GetOrderStatusCategoriesWithCountAsync()
+        {
+            var result = await _orders.Aggregate()
+                .Group(order => order.Status, g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            // Convert the result to a dictionary
+            var statusCountDict = result.ToDictionary(r => r.Status, r => r.Count);
+
+            return statusCountDict;
+        }
+
+
         // Get orders by vendor ID
         public async Task<List<OrderModel>> GetOrdersByVendorId(string vendorId)
         {

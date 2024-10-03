@@ -47,6 +47,9 @@ public class OrderModel
 
     public Dictionary<string, VendorOrderStatus> VendorDeliveryStatus { get; set; } = new Dictionary<string, VendorOrderStatus>();
 
+    //Order count
+    public int? OrderCount { get; set; }
+
     // Track cancellation requests from customers
     public bool IsCancellationRequested { get; set; } = false;
 
