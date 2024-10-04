@@ -161,14 +161,14 @@ namespace EADProject.Controllers
         // PUT: api/user/{id}/deactivateUser
         // Parameters: The user ID.
         // Returns: A success message if deactivated, or 404 Not Found if the user does not exist.
-        [HttpPut("{id}/deactivateUser")]
-        public async Task<IActionResult> DeactivateAccount(string id)
+        [HttpPut("deactivateUser")]
+        public async Task<IActionResult> DeactivateAccount([FromBody] string email)
         {
-            // Retrieve the user by ID before deactivating.
-            var user = await _userService.GetUserByIdAsync(id);
+            // Check if the user exists before deactivating, using email only
+            var user = await _userService.GetUserByEmailAsync(email); // Use a dummy password to check if user exists
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found.");
             }
 
             // Ensure only customers can deactivate their own accounts.
@@ -178,7 +178,7 @@ namespace EADProject.Controllers
             }
 
             // Call the service to deactivate the account.
-            var result = await _userService.DeactivateUserAccountAsync(id);
+            var result = await _userService.DeactivateUserAccountAsync(email);
             if (result)
             {
                 return Ok("User account deactivated successfully.");
@@ -191,18 +191,24 @@ namespace EADProject.Controllers
         // PUT: api/user/{id}/reactivateUser
         // Parameters: The user ID.
         // Returns: A success message if reactivated, or 404 Not Found if the user does not exist.
-        [HttpPut("{id}/reactivateUser")]
-        public async Task<IActionResult> ReactivateAccount(string id)
+        [HttpPut("reactivateUser")]
+        public async Task<IActionResult> ReactivateAccount([FromBody] string email)
         {
-            // Retrieve the user by ID before reactivating.
-            var user = await _userService.GetUserByIdAsync(id);
+            // Retrieve the user by email before reactivating.
+            var user = await _userService.GetUserByEmailAsync(email);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found.");
+            }
+
+            // Ensure only customers can reactivate their own accounts.
+            if (user.Role != "Customer")
+            {
+                return Forbid("Only customers can reactivate their own account.");
             }
 
             // Call the service to reactivate the account.
-            var result = await _userService.ReactivateUserAccountAsync(id);
+            var result = await _userService.ReactivateUserAccountAsync(email);
             if (result)
             {
                 return Ok("User account reactivated successfully.");
@@ -210,6 +216,7 @@ namespace EADProject.Controllers
 
             return BadRequest("Failed to reactivate user account.");
         }
+
 
         // Retrieve all users from the system.
         // GET: api/user/getAllUsers
