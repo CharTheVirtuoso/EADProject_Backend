@@ -89,14 +89,29 @@ namespace EADProject.Services
             return result.ModifiedCount > 0;
         }
 
-        // Update VendorOrderStatus from Pending to ReadyForDelivery
-        public async Task<bool> UpdateVendorOrderStatus(string orderId, string vendorId)
+        // Check if all vendor items are ready, and if so, update the order status
+        public async Task UpdateOrderStatusBasedOnVendorReadiness(string orderId)
         {
-            var filter = Builders<OrderModel>.Filter.Where(order => order.Id == orderId && order.VendorDeliveryStatus[vendorId] == VendorOrderStatus.Pending);
-            var update = Builders<OrderModel>.Update.Set(order => order.VendorDeliveryStatus[vendorId], VendorOrderStatus.ReadyForDelivery);
-            var result = await _orders.UpdateOneAsync(filter, update);
+            var order = await _orders.Find(o => o.Id == orderId).FirstOrDefaultAsync();
+            if (order == null) return;
 
+            // Check if all items from different vendors are marked as Ready
+            bool allVendorsReady = order.Items.All(item => item.VendorStatus == VendorOrderStatus.Ready);
+
+            // Update the order status accordingly
+            var newStatus = allVendorsReady ? OrderStatus.VendorReady : OrderStatus.PartiallyDelivered;
+            var update = Builders<OrderModel>.Update.Set(order => order.Status, newStatus);
+            await _orders.UpdateOneAsync(o => o.Id == orderId, update);
+        }
+
+        public async Task<bool> UpdateOrder(OrderModel order)
+        {
+            var result = await _orders.ReplaceOneAsync(o => o.Id == order.Id, order);
             return result.ModifiedCount > 0;
         }
+
+
+
+
     }
 }
