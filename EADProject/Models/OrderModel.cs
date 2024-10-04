@@ -8,6 +8,16 @@ public class OrderItemModel
     public string VendorId { get; set; }
     public int Quantity { get; set; }
     public decimal Price { get; set; }
+
+
+    public VendorOrderStatus VendorStatus { get; set; } = VendorOrderStatus.Processing;  // Default status
+}
+
+public enum VendorOrderStatus
+{
+    Processing,
+    Ready,
+    
 }
 
 public enum OrderStatus
@@ -20,11 +30,6 @@ public enum OrderStatus
     Canceled
 }
 
-public enum VendorOrderStatus
-{
-    Pending,
-    ReadyForDelivery
-}
 
 public class OrderModel
 {
@@ -44,8 +49,6 @@ public class OrderModel
     public string PaymentMethod { get; set; }
 
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-
-    public Dictionary<string, VendorOrderStatus> VendorDeliveryStatus { get; set; } = new Dictionary<string, VendorOrderStatus>();
 
     //Order count
     public int? OrderCount { get; set; }
