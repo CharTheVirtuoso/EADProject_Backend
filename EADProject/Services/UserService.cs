@@ -128,20 +128,23 @@ namespace EADProject.Services
         }
 
         // Method: Deactivate a user account by setting 'IsActive' to false.
-        public async Task<bool> DeactivateUserAccountAsync(string id)
+        public async Task<bool> DeactivateUserAccountAsync(string email)
         {
-            var objectId = new ObjectId(id);
             var update = Builders<UserModel>.Update.Set(user => user.IsActive, false);
-            var result = await _users.UpdateOneAsync(user => user.Id == objectId.ToString(), update);
+            var result = await _users.UpdateOneAsync(user => user.Email == email, update);
             return result.IsAcknowledged && result.ModifiedCount > 0;
         }
 
-        // Method: Reactivate a previously deactivated user account by setting 'IsActive' to true.
-        public async Task<bool> ReactivateUserAccountAsync(string id)
+        public async Task<UserModel> GetUserByEmailAsync(string email)
         {
-            var objectId = new ObjectId(id);
+            return await _users.Find(user => user.Email == email).FirstOrDefaultAsync();
+        }
+
+        // Method: Reactivate a previously deactivated user account by setting 'IsActive' to true.
+        public async Task<bool> ReactivateUserAccountAsync(string email)
+        {
             var update = Builders<UserModel>.Update.Set(user => user.IsActive, true);
-            var result = await _users.UpdateOneAsync(user => user.Id == objectId.ToString(), update);
+            var result = await _users.UpdateOneAsync(user => user.Email == email, update);
             return result.IsAcknowledged && result.ModifiedCount > 0;
         }
 
