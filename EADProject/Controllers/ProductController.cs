@@ -4,7 +4,6 @@
  *              operations. This controller handles product creation, 
  *              updating, deleting, retrieving, and stock management.
  *              The API is accessible to vendors, admins, and CSR.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: This controller is part of the API layer that interacts 
  *        with the ProductService class and MongoDB collections.

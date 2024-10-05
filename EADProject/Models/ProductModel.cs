@@ -5,7 +5,6 @@
  *              such as name, description, price, stock quantity, and 
  *              vendor information. The model is used in communication 
  *              with MongoDB.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: This class includes a low stock flag to trigger alerts when 
  *        the stock quantity is low.

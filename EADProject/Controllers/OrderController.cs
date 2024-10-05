@@ -1,4 +1,21 @@
-﻿using EADProject.Models;
+﻿/************************************** 
+    * OrderController: Handles HTTP requests related to order management
+    * 
+    * This controller is responsible for the interaction between the mobile app, 
+    * the web dashboard, and the backend services by providing various 
+    * endpoints for creating, updating, and retrieving orders.
+    * 
+    * Key functionalities include:
+    * - Creating new orders
+    * - Fetching orders by ID, status, and vendor
+    * - Updating order statuses (Delivered, Canceled, VendorReady)
+    * - Managing vendor-specific order updates and order cancellation notes
+    * 
+    * There are endpoints designed specifically for the mobile app and the 
+    * web dashboard to cater to different needs.
+    ***************************************/
+
+using EADProject.Models;
 using EADProject.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -138,8 +155,29 @@ namespace EADProject.Controllers
             return NoContent();
         }
 
-
-
-
+        // Endpoint to update the cancellation note
+        [HttpPut("{orderId}/updateCancellationNote")]
+        public async Task<IActionResult> UpdateCancellationNote(string orderId, [FromBody] UpdateCancellationNoteRequest request)
+        {
+            var updated = await _orderService.UpdateCancellationNoteAsync(orderId, request.CancellationNote);
+            if (updated)
+            {
+                return Ok(new { message = "Cancellation note updated successfully." });
+            }
+            return NotFound(new { message = "Order not found or update failed." });
+        }
     }
+
+    // Request model to pass the cancellation note
+    public class UpdateCancellationNoteRequest
+    {
+        public string CancellationNote { get; set; }
+    }
+
+
+
+
+
 }
+
+

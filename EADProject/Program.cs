@@ -3,7 +3,6 @@
  * Description: Entry point for the EAD project. This file configures
  *              the services, middleware, and MongoDB connection settings 
  *              required for the application to run.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 29, 2024
  * Notes: The application uses MongoDB for data storage and configures
  *        necessary services like CORS and Swagger for development.

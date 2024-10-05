@@ -3,7 +3,6 @@
  * Description: This service provides data access methods for handling
  *              product categories in the MongoDB database. It allows 
  *              creation, retrieval, and updating of category status.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: This service interacts with the MongoDB collection 'Categories'
  *        to perform CRUD operations and category status updates.

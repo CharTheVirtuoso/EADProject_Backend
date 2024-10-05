@@ -5,7 +5,6 @@
  *              and retrieving products from the MongoDB database. 
  *              It also includes methods for managing stock and category 
  *              associations.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: This class integrates with MongoDB collections for products, 
  *        categories, and users, and handles stock updates, low stock 
