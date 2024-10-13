@@ -1,4 +1,9 @@
-﻿using MongoDB.Bson;
+﻿/***************************************************************
+ * File Name: NotificationModel.cs
+ * Description: Represents the data model for notifications
+ *  Date Created: September 15, 2024
+ ***************************************************************/
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 

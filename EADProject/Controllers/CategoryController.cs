@@ -4,7 +4,6 @@
  *              the management of product categories. It provides 
  *              endpoints for creating, fetching, and updating the 
  *              status of categories in the system.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: This controller interacts with the CategoryService to manage 
  *        categories. Endpoints allow for CRUD operations and status 

@@ -1,4 +1,9 @@
-﻿using EADProject.Services;
+﻿/***************************************************************
+ * File Name: VendorNotificationService.cs
+ * Description: Represents the data service for notifications for vendor
+ * Date Created: September 15, 2024
+ ***************************************************************/
+using EADProject.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 

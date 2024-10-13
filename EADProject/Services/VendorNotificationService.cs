@@ -1,4 +1,9 @@
-﻿using EADProject.Models;
+﻿/***************************************************************
+ * File Name: VendorNotificationService.cs
+ * Description: Represents the data service for notifications for vendor
+ * Date Created: September 15, 2024
+ ***************************************************************/
+using EADProject.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;

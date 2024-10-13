@@ -3,7 +3,6 @@
  * Description: Represents the data model for product categories in 
  *              the system. This model is used to store and manage 
  *              category information in the MongoDB database.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: Category names must be unique. The `IsActive` field indicates 
  *        if the category is currently active and can be assigned to 

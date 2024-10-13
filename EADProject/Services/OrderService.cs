@@ -1,4 +1,17 @@
-﻿using EADProject.Models;
+﻿/******************************************************************
+ * File Name: OrderService.cs
+ * Description: This service class provides methods to interact with 
+ *              the Order collection in the MongoDB database. It handles 
+ *              creation, retrieval, and updates to order documents, 
+ *              supporting functionality for both the mobile app and 
+ *              web app dashboard. It also manages order statuses based 
+ *              on vendor readiness and customer actions.
+ * Date Created: September 15, 2024
+ * Notes: This service includes methods that facilitate both customer 
+ *        and vendor interactions with orders, allowing for order 
+ *        creation, status management, and retrieval by vendor or status.
+ ******************************************************************/
+using EADProject.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;
@@ -110,7 +123,18 @@ namespace EADProject.Services
             return result.ModifiedCount > 0;
         }
 
+        // Update the cancellation note for a specific order
+        public async Task<bool> UpdateCancellationNoteAsync(string orderId, string cancellationNote)
+        {
+            var filter = Builders<OrderModel>.Filter.Eq(o => o.Id, orderId);
+            var update = Builders<OrderModel>.Update
+                            .Set(o => o.CancellationNote, cancellationNote)
+                            .Set(o => o.Status, OrderStatus.Canceled);  // Optionally, set the status to "Canceled"
 
+            var result = await _orders.UpdateOneAsync(filter, update);
+
+            return result.ModifiedCount > 0;
+        }
 
 
     }

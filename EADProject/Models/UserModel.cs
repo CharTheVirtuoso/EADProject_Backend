@@ -3,7 +3,6 @@
  * Description: This class represents the structure of the user model
  *              stored in the MongoDB database. It includes fields for 
  *              user identification, login credentials, role, and account status.
- * Author: Chanukya Serasinghe, Nashali Perera
  * Date Created: September 15, 2024
  * Notes: The 'Id' field is represented as a MongoDB ObjectId. The 
  *        IsActive field is true by default, meaning a user account 
