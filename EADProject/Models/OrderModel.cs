@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 public class OrderItemModel
 {
-    //public string ProductId { get; set; }
+   
     public string ProductName { get; set; }
     public string VendorId { get; set; }
     public int Quantity { get; set; }
@@ -59,7 +59,8 @@ public class OrderModel
     // Cancellation note (if CSR/Admin cancels it)
     public string? CancellationNote { get; set; }
 
-   
+    public string OrderId { get; set; }
+
 }
 
 
