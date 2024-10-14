@@ -19,12 +19,11 @@ namespace EADProject.Services
         }
 
         // Add a rating for a vendor
-        public async Task AddRating(string vendorId, string customerId, int rating, string? review = null)
+        public async Task AddRating(string vendorId, int rating, string? review = null)
         {
             var newRating = new RatingModel
             {
                 VendorId = vendorId,
-                CustomerId = customerId,
                 Rating = rating,
                 Review = review
             };

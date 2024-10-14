@@ -20,7 +20,7 @@ namespace EADProject.Controllers
         [HttpPost("AddRating")]
         public async Task<IActionResult> AddRating([FromBody] RatingModel rating)
         {
-            await _ratingService.AddRating(rating.VendorId, rating.CustomerId, rating.Rating, rating.Review);
+            await _ratingService.AddRating(rating.VendorId, rating.Rating, rating.Review);
             return Ok(new { message = "Rating added successfully!" });
         }
 

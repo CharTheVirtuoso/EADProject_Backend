@@ -13,9 +13,6 @@ namespace EADProject.Models
         // Vendor ID being rated.
         public string VendorId { get; set; }
 
-        // Customer ID who rated the vendor.
-        public string CustomerId { get; set; }
-
         // Rating value (1 to 5 stars, for example).
         public int Rating { get; set; }
 
