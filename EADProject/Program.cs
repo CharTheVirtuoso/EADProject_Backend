@@ -37,6 +37,7 @@ public class Program
         builder.Services.AddScoped<RatingService>();
         builder.Services.AddScoped<VendorNotificationService>();
         builder.Services.AddScoped<AdminNotificationService>();
+        builder.Services.AddScoped<CustomerNotificationService>();
         builder.Services.AddScoped<JwtTokenHelper>();
 
         // Add controllers to handle HTTP requests and responses.

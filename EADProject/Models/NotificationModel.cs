@@ -12,7 +12,8 @@ namespace EADProject.Models
     public enum NotificationType
     {
         Admin,
-        Vendor
+        Vendor,
+        Customer
     }
 
     public class NotificationModel

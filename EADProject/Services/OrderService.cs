@@ -24,12 +24,14 @@ namespace EADProject.Services
     {
         private readonly IMongoCollection<OrderModel> _orders;
         private readonly IMongoCollection<ProductModel> _products;
+        private readonly CustomerNotificationService _notificationService;
 
-        public OrderService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings)
+        public OrderService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, CustomerNotificationService notificationService)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _orders = database.GetCollection<OrderModel>("Orders");
             _products = database.GetCollection<ProductModel>("Products");
+            _notificationService = notificationService;
         }
 
         /**************************************Endpoints needed for the mobile app ***************************************/
@@ -145,6 +147,11 @@ namespace EADProject.Services
             var filter = Builders<OrderModel>.Filter.Where(order => order.Id == orderId && order.Status == OrderStatus.Processing);
             var update = Builders<OrderModel>.Update.Set(order => order.Status, OrderStatus.Canceled);
             var result = await _orders.UpdateOneAsync(filter, update);
+
+            // Create a notification for the CSR admin.
+            var message = $"Your Order - {orderId} is cancelled.";
+            await _notificationService.CreateCustomerNotificationAsync(message);
+
 
             return result.ModifiedCount > 0;
         }

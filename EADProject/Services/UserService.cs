@@ -23,10 +23,11 @@ namespace EADProject.Services
     {
         private readonly IMongoCollection<UserModel> _users;
         private readonly AdminNotificationService _notificationService;
+        
         private readonly JwtTokenHelper _jwtTokenHelper;
 
         // Constructor: Initializes the MongoDB collection for users using client and settings.
-        public UserService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, AdminNotificationService notificationService, JwtTokenHelper jwtTokenHelper)
+        public UserService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, AdminNotificationService notificationService,JwtTokenHelper jwtTokenHelper)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _users = database.GetCollection<UserModel>("Users");
