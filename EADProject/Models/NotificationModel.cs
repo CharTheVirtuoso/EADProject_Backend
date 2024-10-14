@@ -22,6 +22,8 @@ namespace EADProject.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
+        public string? OrderId { get; set; }
+
         [BsonElement("Message")]
         public string Message { get; set; }
 

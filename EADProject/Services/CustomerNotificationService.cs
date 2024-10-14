@@ -15,11 +15,13 @@ namespace EADProject.Services
     public class CustomerNotificationService
     {
         private readonly IMongoCollection<NotificationModel> _notifications;
+        private readonly IMongoCollection<OrderModel> _orders;
 
         public CustomerNotificationService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _notifications = database.GetCollection<NotificationModel>("Notifications");
+            _orders = database.GetCollection<OrderModel>("Orders");
         }
 
         // Create a notification for an admin
@@ -41,5 +43,49 @@ namespace EADProject.Services
         {
             return await _notifications.Find(n => n.IsRead == false && n.Type == NotificationType.Customer).ToListAsync();
         }
+
+        public async Task<bool> RequestOrderCancellationAsync(string orderId, string message)
+        {
+            // Fetch the order from the database using the orderId
+            var order = await _orders.Find(o => o.OrderId == orderId).FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                // If the order does not exist, return false or throw an exception
+                return false;
+            }
+
+            // Update the order to indicate that cancellation has been requested
+            order.IsCancellationRequested = true;
+
+            // Optional: You can add a note or any additional information related to the cancellation
+            order.CancellationNote = message;
+
+            // Save the updated order back into the database
+            var updateResult = await _orders.ReplaceOneAsync(o => o.OrderId == orderId, order);
+
+            if (!updateResult.IsAcknowledged)
+            {
+                // If the update operation fails, return false
+                return false;
+            }
+
+            // Optionally, create a notification for the cancellation request
+            var notification = new NotificationModel
+            {
+                OrderId = orderId,
+                Message = message,
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Insert the notification into the notifications collection
+            await _notifications.InsertOneAsync(notification);
+
+            // Return true if everything was successful
+            return true;
+        }
+
+
     }
 }
