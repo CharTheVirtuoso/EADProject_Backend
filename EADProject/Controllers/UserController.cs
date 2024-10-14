@@ -23,11 +23,14 @@ namespace EADProject.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly JwtTokenHelper _jwtTokenHelper;
+
 
         // Constructor: Injects the UserService dependency.
-        public UserController(UserService userService)
+        public UserController(UserService userService, JwtTokenHelper jwtTokenHelper)
         {
             _userService = userService;
+            _jwtTokenHelper = jwtTokenHelper;
         }
 
         // Sign-up endpoint for customers.
@@ -62,13 +65,40 @@ namespace EADProject.Controllers
         {
             // Call the service to authenticate the user.
             var user = await _userService.LoginAsync(loginRequest.Email, loginRequest.Password);
+
             if (user != null)
             {
-                return Ok(user);
+               
+                if (user.Value.Role == "Customer")
+                {
+                    //return user information without a token
+                    var response = new
+                    {
+                        Role = user.Value.Role,
+                        Id = user.Value.Id,
+                        Email = user.Value.Email, 
+                        UserStatus = user.Value.UserStatus
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    // For other roles, generate a token
+                    var token = _jwtTokenHelper.GenerateToken(user.Value.Email, user.Value.Role);
+
+                    var response = new
+                    {
+                        Token = token,
+                        Role = user.Value.Role,
+                        Id = user.Value.Id
+                    };
+                    return Ok(response);
+                }
             }
 
             return Unauthorized("Invalid credentials or account not active.");
         }
+
 
         // Admin: Approve user registration.
         // PUT: api/user/admin/approve-user/{id}

@@ -7,9 +7,12 @@
  * Notes: The application uses MongoDB for data storage and configures
  *        necessary services like CORS and Swagger for development.
  ***************************************************************/
+using System.Text;
 using System.Text.Json.Serialization; 
 using EADProject.Models;
 using EADProject.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 
 public class Program
@@ -33,6 +36,7 @@ public class Program
         builder.Services.AddScoped<CategoryService>();
         builder.Services.AddScoped<VendorNotificationService>();
         builder.Services.AddScoped<AdminNotificationService>();
+        builder.Services.AddScoped<JwtTokenHelper>();
 
         // Add controllers to handle HTTP requests and responses.
         //builder.Services.AddControllers();
@@ -53,11 +57,34 @@ public class Program
             options.AddPolicy("AllowAllOrigins",
                 builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         });
+        
+
+        //  JWT authentication
+        var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+        var secretKey = jwtSettings["SecretKey"];
+        var key = Encoding.ASCII.GetBytes(secretKey);
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+               
+            };
+        });
 
         var app = builder.Build();
 
         // Apply CORS policy to allow requests from all origins.
         app.UseCors("AllowAllOrigins");
+
+        app.UseAuthentication();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

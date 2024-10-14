@@ -23,13 +23,15 @@ namespace EADProject.Services
     {
         private readonly IMongoCollection<UserModel> _users;
         private readonly AdminNotificationService _notificationService;
+        private readonly JwtTokenHelper _jwtTokenHelper;
 
         // Constructor: Initializes the MongoDB collection for users using client and settings.
-        public UserService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, AdminNotificationService notificationService)
+        public UserService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, AdminNotificationService notificationService, JwtTokenHelper jwtTokenHelper)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _users = database.GetCollection<UserModel>("Users");
             _notificationService = notificationService; // Injecting notification service
+            _jwtTokenHelper = jwtTokenHelper;
         }
 
         // Method: Sign up a new user for the 'Customer' role with pending approval status.
@@ -52,14 +54,17 @@ namespace EADProject.Services
 
         // Method: Log in an existing user by verifying email and password.
         // Only allows login if the account is active and approved.
-        public async Task<UserModel?> LoginAsync(string email, string password)
+        public async Task<(string Email, string Role, string Id, string UserStatus)?> LoginAsync(string email, string password)
         {
             var user = await _users.Find(x => x.Email == email && x.Password == password).FirstOrDefaultAsync();
 
             // Return the user only if the account is active
             if (user != null && user.IsActive)
             {
-                return user;
+                var token = _jwtTokenHelper.GenerateToken(user.Email, user.Role);
+
+                // Return the necessary information
+                return (Token: token, Role: user.Role, Id: user.Id, UserStatus: user.UserStatus);
             }
 
             return null;
