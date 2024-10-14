@@ -40,5 +40,11 @@ namespace EADProject.Services
             double averageRating = vendorRatings.Average(r => r.Rating);
             return averageRating;
         }
+
+        // New method to fetch reviews
+        public async Task<List<RatingModel>> GetReviews(string vendorId)
+        {
+            return await _ratings.Find(r => r.VendorId == vendorId).ToListAsync();
+        }
     }
 }

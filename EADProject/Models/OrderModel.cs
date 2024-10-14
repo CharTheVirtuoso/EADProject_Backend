@@ -96,7 +96,7 @@ public class OrderModel
     // A note providing the reason for cancellation (if canceled by CSR/Admin).
     public string? CancellationNote { get; set; }
 
-    public string OrderId { get; set; }
+    public string? OrderId { get; set; }
 }
 
 

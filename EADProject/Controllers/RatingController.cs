@@ -31,6 +31,14 @@ namespace EADProject.Controllers
             var averageRating = await _ratingService.GetAverageRating(vendorId);
             return Ok(new { averageRating });
         }
+
+        // GET: api/rating/getReviews/{vendorId}
+        [HttpGet("getReviews/{vendorId}")]
+        public async Task<IActionResult> GetReviews(string vendorId)
+        {
+            List<RatingModel> reviews = await _ratingService.GetReviews(vendorId);
+            return Ok(reviews);
+        }
     }
 }
 
