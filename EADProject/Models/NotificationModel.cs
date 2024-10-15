@@ -27,9 +27,6 @@ namespace EADProject.Models
         [BsonElement("Message")]
         public string Message { get; set; }
 
-        [BsonElement("CreatedAt")]
-        public DateTime CreatedAt { get; set; }
-
         [BsonElement("NotificationType")]
         public NotificationType Type { get; set; }  // Admin or Vendor
     }
