@@ -24,9 +24,6 @@ namespace EADProject.Models
         [BsonElement("Message")]
         public string Message { get; set; }
 
-        [BsonElement("IsRead")]
-        public bool IsRead { get; set; }
-
         [BsonElement("CreatedAt")]
         public DateTime CreatedAt { get; set; }
 
