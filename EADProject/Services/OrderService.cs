@@ -23,21 +23,70 @@ namespace EADProject.Services
     public class OrderService
     {
         private readonly IMongoCollection<OrderModel> _orders;
+        private readonly IMongoCollection<ProductModel> _products;
+        private readonly CustomerNotificationService _notificationService;
 
-        public OrderService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings)
+        public OrderService(IMongoClient mongoClient, IOptions<MongoDBSettings> settings, CustomerNotificationService notificationService)
         {
             var database = mongoClient.GetDatabase(settings.Value.DatabaseName);
             _orders = database.GetCollection<OrderModel>("Orders");
+            _products = database.GetCollection<ProductModel>("Products");
+            _notificationService = notificationService;
         }
 
         /**************************************Endpoints needed for the mobile app ***************************************/
 
+        //// Create a new order
+        //public async Task<OrderModel> CreateOrder(OrderModel order)
+        //{
+        //    await _orders.InsertOneAsync(order);
+        //    return order;
+        //}
+
         // Create a new order
         public async Task<OrderModel> CreateOrder(OrderModel order)
         {
+            // Loop through each item in the order
+            foreach (var orderItem in order.Items)
+            {
+                // Fetch the corresponding product using VendorId and ProductName (or ideally by a unique ProductId if available)
+                var product = await _products.Find(p => p.VendorId == orderItem.VendorId && p.Name == orderItem.ProductName).FirstOrDefaultAsync();
+
+                if (product == null)
+                {
+                    // Handle case where product is not found (e.g., log error, return a failure response, etc.)
+                    throw new Exception($"Product '{orderItem.ProductName}' from Vendor '{orderItem.VendorId}' not found.");
+                }
+
+                // Check if there is enough stock
+                if (product.StockQuantity < orderItem.Quantity)
+                {
+                    // Handle the case where there is insufficient stock
+                    throw new Exception($"Insufficient stock for product '{product.Name}'. Available: {product.StockQuantity}, Requested: {orderItem.Quantity}");
+                }
+
+                // Reduce the stock quantity of the product
+                product.StockQuantity -= orderItem.Quantity;
+
+                // If stock quantity is now below a certain threshold, mark the product as low stock
+                product.IsLowStock = product.StockQuantity <= 5; // Example threshold for low stock
+
+                // Update the product in the database
+                var updateResult = await _products.ReplaceOneAsync(p => p.Id == product.Id, product);
+
+                if (!updateResult.IsAcknowledged)
+                {
+                    // Handle failure in updating the product
+                    throw new Exception($"Failed to update stock for product '{product.Name}'");
+                }
+            }
+
+            // After all stock updates are successful, insert the order
             await _orders.InsertOneAsync(order);
+
             return order;
         }
+
 
 
         // Get all orders (Customers/CSR/Admin can list all orders)
@@ -98,6 +147,11 @@ namespace EADProject.Services
             var filter = Builders<OrderModel>.Filter.Where(order => order.Id == orderId && order.Status == OrderStatus.Processing);
             var update = Builders<OrderModel>.Update.Set(order => order.Status, OrderStatus.Canceled);
             var result = await _orders.UpdateOneAsync(filter, update);
+
+            // Create a notification for the CSR admin.
+            var message = $"Your Order - {orderId} is cancelled.";
+            await _notificationService.CreateCustomerNotificationAsync(message);
+
 
             return result.ModifiedCount > 0;
         }

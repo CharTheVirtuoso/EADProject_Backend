@@ -12,7 +12,8 @@ namespace EADProject.Models
     public enum NotificationType
     {
         Admin,
-        Vendor
+        Vendor,
+        Customer
     }
 
     public class NotificationModel
@@ -20,6 +21,8 @@ namespace EADProject.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+
+        public string? OrderId { get; set; }
 
         [BsonElement("Message")]
         public string Message { get; set; }
